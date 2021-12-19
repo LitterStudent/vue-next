@@ -630,6 +630,7 @@ export function applyOptions(instance: ComponentInternalInstance) {
             writable: true
           })
         } else {
+          // 改变options中methods的this
           ctx[key] = methodHandler.bind(publicThis)
         }
         if (__DEV__) {
