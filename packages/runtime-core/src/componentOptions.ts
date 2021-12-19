@@ -685,13 +685,16 @@ export function applyOptions(instance: ComponentInternalInstance) {
   shouldCacheAccess = true
 
   if (computedOptions) {
+    // 遍历computed对象，为每个计算属性修改 this 以及其他操作
     for (const key in computedOptions) {
       const opt = (computedOptions as ComputedOptions)[key]
+      // 判断该计算属性 是一个函数 还是对象 {set(){},get(){}}. 
+      // 如果是对象，修改对象的get方法的this 
       const get = isFunction(opt)
         ? opt.bind(publicThis, publicThis)
         : isFunction(opt.get)
         ? opt.get.bind(publicThis, publicThis)
-        : NOOP
+        : NOOP  // NOOP 是 ()=>{} 一个空函数
       if (__DEV__ && get === NOOP) {
         warn(`Computed property "${key}" has no getter.`)
       }
@@ -705,6 +708,7 @@ export function applyOptions(instance: ComponentInternalInstance) {
               )
             }
           : NOOP
+
       const c = computed({
         get,
         set
