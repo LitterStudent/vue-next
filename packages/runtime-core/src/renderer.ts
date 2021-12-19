@@ -349,10 +349,11 @@ function baseCreateRenderer(
 
   // Note: functions inside this closure should use `const xxx = () => {}`
   // style in order to prevent being inlined by minifiers.
+  // patch 方法 新旧虚拟节点的比较，然后进行打补丁
   const patch: PatchFn = (
-    n1,
-    n2,
-    container,
+    n1,   // n1 表示旧的vnode，当n1为null时，表示这是一次挂载操作
+    n2,   // n2 表示新的vnode, 根据n2的type进行不同的处理
+    container,  // 渲染后会将vnode渲染道container上
     anchor = null,
     parentComponent = null,
     parentSuspense = null,
@@ -1619,6 +1620,7 @@ function baseCreateRenderer(
         return
       } else if (patchFlag & PatchFlags.UNKEYED_FRAGMENT) {
         // unkeyed
+        // 没有key,使用零一种不需要key的算法
         patchUnkeyedChildren(
           c1 as VNode[],
           c2 as VNodeArrayChildren,
@@ -1828,6 +1830,7 @@ function baseCreateRenderer(
         const anchor = nextPos < l2 ? (c2[nextPos] as VNode).el : parentAnchor
         while (i <= e2) {
           patch(
+            // n1为null时，表示的是挂载的操作
             null,
             (c2[i] = optimized
               ? cloneIfMounted(c2[i] as VNode)

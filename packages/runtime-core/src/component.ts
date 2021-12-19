@@ -817,7 +817,7 @@ export function finishComponentSetup(
   if (__FEATURE_OPTIONS_API__ && !(__COMPAT__ && skipOptions)) {
     setCurrentInstance(instance)
     pauseTracking()
-    applyO  ptions(instance)
+    applyOptions(instance)
     resetTracking()
     unsetCurrentInstance()
   }
