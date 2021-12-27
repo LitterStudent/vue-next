@@ -178,6 +178,12 @@ export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
+  // App 最终传到了这里被调用
+  // 该函数调用后返回一个 app 组件实例
+  // app.component()
+  // app.directive()
+  // app.mixin()
+  // 以上app的api都是在这里封装的
   return function createApp(rootComponent, rootProps = null) {
     if (rootProps != null && !isObject(rootProps)) {
       __DEV__ && warn(`root props passed to app.mount() must be an object.`)
@@ -280,6 +286,8 @@ export function createAppAPI<HostElement>(
         isSVG?: boolean
       ): any {
         if (!isMounted) {
+          // 1.创建根组件的 vndoe
+          //   使用createVNode函数创建 vnode
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps
@@ -298,6 +306,8 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            // 渲染 vnode 将vnode 挂载到 rootContainer上
+            // render 函数是createApp函数中传入的
             render(vnode, rootContainer, isSVG)
           }
           isMounted = true

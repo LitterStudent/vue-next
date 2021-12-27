@@ -1,5 +1,6 @@
 // This entry is the "full-build" that includes both the runtime
 // and the compiler, and supports on-the-fly compilation of the template option.
+// 整个项目的构建入口
 import { initDev } from './dev'
 import { compile, CompilerOptions, CompilerError } from '@vue/compiler-dom'
 import { registerRuntimeCompiler, RenderFunction, warn } from '@vue/runtime-dom'
@@ -86,5 +87,7 @@ function compileToFunction(
 
 registerRuntimeCompiler(compileToFunction)
 
+
 export { compileToFunction as compile }
+//  去查看该文件
 export * from '@vue/runtime-dom'

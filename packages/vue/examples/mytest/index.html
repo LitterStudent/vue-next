@@ -11,9 +11,23 @@
     <script src="../../dist/vue.global.js"></script>
     <script>
         debugger;
-        Vue.createApp({
-            template:`<h2>nihao</h2>`
-        }).mount('#app');
+        const App = {
+            template:`<h2>{{msg}}</h2><button @click="btnClick">click</button>`,
+            data(){
+                return {
+                    msg:'nihao'
+                }
+            },
+            methods:{
+                btnClick(){
+                    this.msg = "buhao"
+                }
+            }
+        }
+        // 1.调用了createApp()函数
+        const app = Vue.createApp(App)
+        // 2.调用了app的mount方法
+        app.mount('#app');
     </script>
 </body>
 </html>

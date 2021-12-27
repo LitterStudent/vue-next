@@ -41,6 +41,8 @@ let enabledHydration = false
 
 function ensureRenderer() {
   return (
+    // 判断渲染器是否已经创建
+    // 未创建就通过createRenderer函数创建
     renderer ||
     (renderer = createRenderer<Node, Element | ShadowRoot>(rendererOptions))
   )
@@ -63,7 +65,10 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+// 我们熟悉的 createApp  
 export const createApp = ((...args) => {
+  // 1.创建 app对象
+  // 由ensureRenderer 由渲染器函数创建
   const app = ensureRenderer().createApp(...args)
 
   if (__DEV__) {
@@ -120,7 +125,9 @@ export const createSSRApp = ((...args) => {
   }
 
   const { mount } = app
+  // 重写了 app.mount 函数,使其能接收 string 参数 
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+  // normalizeContainer通过 querySelect()获取 element
     const container = normalizeContainer(containerOrSelector)
     if (container) {
       return mount(container, true, container instanceof SVGElement)

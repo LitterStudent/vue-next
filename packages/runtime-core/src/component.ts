@@ -456,6 +456,7 @@ export function createComponentInstance(
   const appContext =
     (parent ? parent.appContext : vnode.appContext) || emptyAppContext
 
+    // 定义一个组件实例对象
   const instance: ComponentInternalInstance = {
     uid: uid++,
     vnode,
