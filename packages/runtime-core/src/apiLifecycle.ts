@@ -21,6 +21,7 @@ export function injectHook(
   prepend: boolean = false
 ): Function | undefined {
   if (target) {
+    // 获取该组件实例的某个生命周期的回调函数数组
     const hooks = target[type] || (target[type] = [])
     // cache the error handling wrapper for injected hooks so the same hook
     // can be properly deduped by the scheduler. "__weh" stands for "with error
@@ -68,6 +69,7 @@ export const createHook =
   (hook: T, target: ComponentInternalInstance | null = currentInstance) =>
     // post-create lifecycle registrations are noops during SSR (except for serverPrefetch)
     (!isInSSRComponentSetup || lifecycle === LifecycleHooks.SERVER_PREFETCH) &&
+    // 注入hook (生命周期类型，回调函数，组件实例)
     injectHook(lifecycle, hook, target)
 
 export const onBeforeMount = createHook(LifecycleHooks.BEFORE_MOUNT)

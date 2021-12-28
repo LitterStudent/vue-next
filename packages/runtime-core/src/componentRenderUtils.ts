@@ -41,6 +41,8 @@ export function markAttrsAccessed() {
 export function renderComponentRoot(
   instance: ComponentInternalInstance
 ): VNode {
+  // 解构
+  // 取出render
   const {
     type: Component,
     vnode,
@@ -74,7 +76,7 @@ export function renderComponentRoot(
       result = normalizeVNode(
         render!.call(
           proxyToUse,
-          proxyToUse!,
+          proxyToUse!, // 传入 proxy 
           renderCache,
           props,
           setupState,

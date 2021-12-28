@@ -178,7 +178,7 @@ export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
-  // App 最终传到了这里被调用
+  // createApp(App) 的App（rootComponent） 最终传到了这里被调用 
   // 该函数调用后返回一个 app 组件实例
   // app.component()
   // app.directive()
@@ -281,13 +281,14 @@ export function createAppAPI<HostElement>(
       },
 
       mount(
-        rootContainer: HostElement,
+        rootContainer: HostElement,// rootContainer --> '#el'
         isHydrate?: boolean,
         isSVG?: boolean
       ): any {
         if (!isMounted) {
           // 1.创建根组件的 vndoe
           //   使用createVNode函数创建 vnode
+          //   rootComponent ---> const App = {data(){...},methods(){...},....}
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps

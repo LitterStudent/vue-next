@@ -583,14 +583,21 @@ export let isInSSRComponentSetup = false
 export function setupComponent(
   instance: ComponentInternalInstance,
   isSSR = false
-) {
+) { 
   isInSSRComponentSetup = isSSR
 
   const { props, children } = instance.vnode
+  // 判断是否为一个有状态的组件
+  // const app = {data,methdd, setup} 有状态
+  // function app {} 无状态
   const isStateful = isStatefulComponent(instance)
+  // 初始化instance prpps (props attrs)
   initProps(instance, props, isStateful, isSSR)
+  // 初始化instance slots
   initSlots(instance, children)
 
+  // 设置有状态组件
+  // 内部执行 setup函数
   const setupResult = isStateful
     ? setupStatefulComponent(instance, isSSR)
     : undefined
@@ -637,13 +644,18 @@ function setupStatefulComponent(
     exposePropsOnRenderContext(instance)
   }
   // 2. call setup()
+  // 取出 setup 函数
   const { setup } = Component
   if (setup) {
+    // setup 有值的话
+    //  创建一个 setupContext 上下文，可以被 emit slots 函数调用
     const setupContext = (instance.setupContext =
       setup.length > 1 ? createSetupContext(instance) : null)
 
     setCurrentInstance(instance)
     pauseTracking()
+    //  执行setup函数，并且获取结果
+    //  内部执行了 setup函数，并把 instance.props, setupcontext 作为参数传入
     const setupResult = callWithErrorHandling(
       setup,
       instance,
@@ -653,6 +665,7 @@ function setupStatefulComponent(
     resetTracking()
     unsetCurrentInstance()
 
+    // 如果返回结果是promise
     if (isPromise(setupResult)) {
       setupResult.then(unsetCurrentInstance, unsetCurrentInstance)
 
@@ -676,6 +689,8 @@ function setupStatefulComponent(
         )
       }
     } else {
+    // 处理 setup 的结果
+    //  setup(){ return {...} } 处理setup返回的对象
       handleSetupResult(instance, setupResult, isSSR)
     }
   } else {
@@ -709,6 +724,7 @@ export function handleSetupResult(
     if (__DEV__ || __FEATURE_PROD_DEVTOOLS__) {
       instance.devtoolsRawSetupState = setupResult
     }
+    // 对返回的对象 进行一个代理
     instance.setupState = proxyRefs(setupResult)
     if (__DEV__) {
       exposeSetupStateOnRenderContext(instance)
@@ -720,6 +736,7 @@ export function handleSetupResult(
       }`
     )
   }
+  // 最后 执行finishComponentSetup
   finishComponentSetup(instance, isSSR)
 }
 
@@ -797,6 +814,8 @@ export function finishComponentSetup(
             extend(finalCompilerOptions.compatConfig, Component.compatConfig)
           }
         }
+        // 调用compile 函数 对 template进行处理 运行时编译模板
+        // 赋值给Component.render
         Component.render = compile(template, finalCompilerOptions)
         if (__DEV__) {
           endMeasure(instance, `compile`)
@@ -804,6 +823,7 @@ export function finishComponentSetup(
       }
     }
 
+    // 组件的render函数 赋值给instance的函数
     instance.render = (Component.render || NOOP) as InternalRenderFunction
 
     // for runtime-compiled render functions using `with` blocks, the render
@@ -815,9 +835,11 @@ export function finishComponentSetup(
   }
 
   // support for 2.x options
+  // 支持vue2的optionAPI
   if (__FEATURE_OPTIONS_API__ && !(__COMPAT__ && skipOptions)) {
     setCurrentInstance(instance)
     pauseTracking()
+    // 应用对应的 options
     applyOptions(instance)
     resetTracking()
     unsetCurrentInstance()

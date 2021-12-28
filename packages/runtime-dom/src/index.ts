@@ -77,7 +77,9 @@ export const createApp = ((...args) => {
   }
 
   const { mount } = app
+    // 重写了 app.mount 函数,使其能接收 string 参数 
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+    // normalizeContainer通过 querySelect()获取 element
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
 
@@ -125,9 +127,8 @@ export const createSSRApp = ((...args) => {
   }
 
   const { mount } = app
-  // 重写了 app.mount 函数,使其能接收 string 参数 
+
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
-  // normalizeContainer通过 querySelect()获取 element
     const container = normalizeContainer(containerOrSelector)
     if (container) {
       return mount(container, true, container instanceof SVGElement)

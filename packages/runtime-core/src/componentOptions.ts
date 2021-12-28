@@ -549,10 +549,12 @@ export function applyOptions(instance: ComponentInternalInstance) {
 
   // call beforeCreate first before accessing other options since
   // the hook may mutate resolved options (#2791)
+  // 执行 beforeCreate
   if (options.beforeCreate) {
     callHook(options.beforeCreate, instance, LifecycleHooks.BEFORE_CREATE)
   }
 
+  // 解构 options
   const {
     // state
     data: dataOptions,
@@ -562,6 +564,7 @@ export function applyOptions(instance: ComponentInternalInstance) {
     provide: provideOptions,
     inject: injectOptions,
     // lifecycle
+    // 生命周期函数
     created,
     beforeMount,
     mounted,
@@ -740,10 +743,14 @@ export function applyOptions(instance: ComponentInternalInstance) {
     })
   }
 
+  // 完成 data methods 等初始化
+  // 执行 created 函数
   if (created) {
     callHook(created, instance, LifecycleHooks.CREATED)
   }
 
+  // 将其他的生命周期函数通过 注册到 onBoforeMount onMounted 这样的
+  // vue3版本的生命周期函数内执行
   function registerLifecycleHook(
     register: Function,
     hook?: Function | Function[]
@@ -751,6 +758,7 @@ export function applyOptions(instance: ComponentInternalInstance) {
     if (isArray(hook)) {
       hook.forEach(_hook => register(_hook.bind(publicThis)))
     } else if (hook) {
+      // 相当于 onBeforeMount(beforeMount[1].bind(vueComponentInstance))
       register((hook as Function).bind(publicThis))
     }
   }
@@ -880,6 +888,7 @@ function callHook(
 ) {
   callWithAsyncErrorHandling(
     isArray(hook)
+    // 给hook 函数 绑定了 组件实例代理
       ? hook.map(h => h.bind(instance.proxy!))
       : hook.bind(instance.proxy!),
     instance,

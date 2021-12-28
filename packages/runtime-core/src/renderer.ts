@@ -1119,6 +1119,7 @@ function baseCreateRenderer(
         // of renderSlot() with no valid children
         n1.dynamicChildren
       ) {
+        // 判断n1 是否有dynamicChildren（一个数组，存放了含有动态数据的vnode）
         // a stable fragment (template root or <template v-for>) doesn't need to
         // patch children order, but it may contain dynamicChildren.
         patchBlockChildren(
@@ -1335,11 +1336,13 @@ function baseCreateRenderer(
       if (!instance.isMounted) {
         let vnodeHook: VNodeHook | null | undefined
         const { el, props } = initialVNode
+        // bm m 是生命周期钩子函数 OnBeforemount OnMounted
         const { bm, m, parent } = instance
         const isAsyncWrapperVNode = isAsyncWrapper(initialVNode)
 
         toggleRecurse(instance, false)
         // beforeMount hook
+        // bm是一个数组 包含了beforeMount回调函数
         if (bm) {
           invokeArrayFns(bm)
         }
@@ -1399,7 +1402,10 @@ function baseCreateRenderer(
             startMeasure(instance, `render`)
           }
           // 调用 renderComponentRoot 渲染组件, 生成子树的vnode
-          //  如果时多根组件的话,会被包裹一层 fragment
+          // 因为template会被编译成render函数，所以 rendeerComponentRoot
+          // 就是去执行render函数获取对应的vnode  赋值给 subTree
+          //  renderComponentRoot 中还有收集 dynamicBlock
+          // 如果时多根组件的话,会被包裹一层 fragment
           const subTree = (instance.subTree = renderComponentRoot(instance))
           if (__DEV__) {
             endMeasure(instance, `render`)
@@ -1423,7 +1429,10 @@ function baseCreateRenderer(
           initialVNode.el = subTree.el
         }
         // mounted hook
+        // mounted的生命周期钩子函数
         if (m) {
+          // 这里并不会直接执行 回调，因为挂载完一个组件的时候并不会执行mounted的生命周期
+          // 而是子组件也都挂载完后，即render函数执行完毕后再通过 flushPostFlushCbs()清空队列
           queuePostRenderEffect(m, parentSuspense)
         }
         // onVnodeMounted
@@ -1493,6 +1502,7 @@ function baseCreateRenderer(
         }
 
         // beforeUpdate hook
+        // beforeUpdate 生命周期钩子
         if (bu) {
           invokeArrayFns(bu)
         }
@@ -1544,6 +1554,8 @@ function baseCreateRenderer(
           updateHOCHostEl(instance, nextTree.el)
         }
         // updated hook
+        // updated生命周期钩子函数
+        // 也没有立即执行，而是等待整个 render之后再执行
         if (u) {
           queuePostRenderEffect(u, parentSuspense)
         }
